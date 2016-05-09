@@ -12,19 +12,15 @@ module Parser
       @content ||= @file.read
     end
 
-    def paragraphs
-      @paragraphs = parse(self.content)
+    def parse(mode = :lines)
+      strategy(mode).parse(self.content)
     end
 
     private
-    def parse(data, mode = :lines)
-      strategy(mode).parse(data)
-    end
-
     def strategy(mode)
       strategy_name = mode.to_s.capitalize
+      raise Parser::Exceptions::WrongStrategy unless File.exists?("./lib/parser/strategies/#{strategy_name}.rb")
       Kernel.const_get('Parser::Strategies::' + strategy_name)
-      # self.respond_to?(method_name) ? self.send(method_name, data) : raise("Unsupported parser method '#{method_name}'")
     end
   end
 end
